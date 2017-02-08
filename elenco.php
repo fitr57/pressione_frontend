@@ -8,12 +8,18 @@ R::setup( 'mysql:host=127.0.0.1;dbname=pressione','pa', 'pressione' );
 
 	$table='pressione';
 	$record=(empty($_REQUEST['id'])) ?  R::dispense($table) : R::load($table, intval($_REQUEST['id']));	
+        
 	try {
+  
 		if ($record && !empty($_REQUEST['act']) && $_REQUEST['act']=='del') R::trash($record);
-		if (!empty($_POST['datamisurazione'])){
-			foreach ($_POST as $k=>$v){
-				$record[$k]=$_POST[$k];
+                
+                $new = json_decode(file_get_contents('php://input'), true);
+		if (!empty($new)){
+                        
+			foreach ($new as $k=>$v){
+				$record[$k]=$v;
 			}
+                        //die(print_r($record,1));
 			R::store($record);
 		}
 	} catch (RedBeanPHP\RedException\SQL $e) {
